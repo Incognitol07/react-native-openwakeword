@@ -14,7 +14,10 @@ namespace margelo::nitro::openwakeword {
     HybridObject::loadHybridMethods();
     // load custom methods/properties
     registerHybrids(this, [](Prototype& prototype) {
-      prototype.registerHybridMethod("sum", &HybridOpenwakewordSpec::sum);
+      prototype.registerHybridMethod("loadModels", &HybridOpenwakewordSpec::loadModels);
+      prototype.registerHybridMethod("processFrame", &HybridOpenwakewordSpec::processFrame);
+      prototype.registerHybridMethod("setThreshold", &HybridOpenwakewordSpec::setThreshold);
+      prototype.registerHybridMethod("reset", &HybridOpenwakewordSpec::reset);
     });
   }
 

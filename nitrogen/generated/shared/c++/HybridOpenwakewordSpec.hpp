@@ -13,9 +13,12 @@
 #error NitroModules cannot be found! Are you sure you installed NitroModules properly?
 #endif
 
+// Forward declaration of `DetectionResult` to properly resolve imports.
+namespace margelo::nitro::openwakeword { struct DetectionResult; }
 
-
-
+#include <string>
+#include "DetectionResult.hpp"
+#include <NitroModules/ArrayBuffer.hpp>
 
 namespace margelo::nitro::openwakeword {
 
@@ -48,7 +51,10 @@ namespace margelo::nitro::openwakeword {
 
     public:
       // Methods
-      virtual double sum(double num1, double num2) = 0;
+      virtual bool loadModels(const std::string& melspecPath, const std::string& embeddingPath, const std::string& wakeWordPath) = 0;
+      virtual DetectionResult processFrame(const std::shared_ptr<ArrayBuffer>& buffer) = 0;
+      virtual void setThreshold(double threshold) = 0;
+      virtual void reset() = 0;
 
     protected:
       // Hybrid Setup
