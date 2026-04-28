@@ -27,5 +27,9 @@ Pod::Spec.new do |s|
 
   s.dependency 'React-jsi'
   s.dependency 'React-callinvoker'
+  
+  # TensorFlow Lite C API
+  s.dependency 'TensorFlowLiteC', '2.14.0'
+  
   install_modules_dependencies(s)
 end
