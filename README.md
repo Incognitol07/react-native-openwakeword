@@ -20,8 +20,63 @@ react-native-openwakeword is a react native package for implementing wake word d
 npm install react-native-openwakeword react-native-nitro-modules
 ```
 
-## Credits
+## Usage
 
+`react-native-openwakeword` is designed as a blazing-fast, zero-copy inference engine built with Nitro. It strictly handles the heavy lifting of machine learning detection. **You must bring your own audio capture library** (such as `react-native-audio-api` or `react-native-live-audio-stream`).
+
+### 1. Preparing the Models
+The library uses TensorFlow Lite to run the official [openWakeWord](https://github.com/dscripka/openWakeWord) models. You need three `.tflite` models:
+1. `melspectrogram.tflite`
+2. `embedding_model.tflite`
+3. Your target wake word (e.g., `hey_jarvis.tflite`)
+
+> [!WARNING]  
+> **Android Pathing Gotcha**: The C++ inference engine requires **absolute file paths**. You cannot simply `require()` the models because Android compresses them into the APK. You must download the models to the device filesystem at runtime (e.g., using `expo-file-system`) or use an asset manager to copy them to the `DocumentDirectory` so C++ can read them.
+
+```typescript
+import { Openwakeword } from 'react-native-openwakeword';
+import * as FileSystem from 'expo-file-system';
+
+// Provide absolute paths to the models on the device filesystem
+const isLoaded = Openwakeword.loadModels(
+  `${FileSystem.documentDirectory}/melspectrogram.tflite`,
+  `${FileSystem.documentDirectory}/embedding.tflite`,
+  `${FileSystem.documentDirectory}/hey_jarvis.tflite`
+);
+
+if (isLoaded) {
+    console.log("Models loaded successfully!");
+}
+```
+
+### 2. Processing Audio Streams
+Start your microphone stream and pipe the 16kHz, 16-bit Mono PCM `ArrayBuffer` directly into the engine. The C++ engine handles the complex streaming ring buffers internally.
+
+```typescript
+import { AudioApi } from 'react-native-audio-api'; // Example audio library
+
+AudioApi.startRecording(
+  { sampleRate: 16000, channels: 1, pcmFormat: 'int16' }, 
+  (buffer: ArrayBuffer) => {
+    // Zero-copy ingest directly into C++
+    const result = Openwakeword.processFrame(buffer);
+    
+    if (result.isDetected) {
+      console.log(`Wake word detected! Probability: ${result.probability}`);
+      // Trigger your voice assistant!
+    }
+  }
+);
+```
+
+### 3. Resetting the Engine
+Because the wake word models are stateful and accumulate context over time, you should clear the internal buffers whenever you manually restart a voice session to prevent "ghost" triggers from old audio.
+
+```typescript
+Openwakeword.reset();
+```
+
+## Credits
 Bootstrapped with [create-nitro-module](https://github.com/patrickkabwe/create-nitro-module).
 
 ## Contributing
