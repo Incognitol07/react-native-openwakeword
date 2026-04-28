@@ -1,5 +1,6 @@
 #include "HybridOpenwakeword.hpp"
 #include <iostream>
+#include <cstring>
 
 namespace margelo::nitro::openwakeword {
 
@@ -58,53 +59,94 @@ bool HybridOpenwakeword::loadModels(const std::string& melspecPath, const std::s
     return true;
 }
 
+void HybridOpenwakeword::shiftLeft(std::vector<float>& buffer, int elements_to_shift) {
+    if (elements_to_shift <= 0 || elements_to_shift >= buffer.size()) return;
+    std::memmove(buffer.data(), buffer.data() + elements_to_shift, (buffer.size() - elements_to_shift) * sizeof(float));
+}
+
 DetectionResult HybridOpenwakeword::processFrame(const std::shared_ptr<ArrayBuffer>& buffer) {
     if (!melspec_interp_ || !embedding_interp_ || !wakeword_interp_) {
         return DetectionResult(0.0, false);
     }
     
-    // 1. Copy audio buffer to Melspec Input
-    TfLiteTensor* melspec_input = TfLiteInterpreterGetInputTensor(melspec_interp_, 0);
+    // 1. Append new audio to buffer
+    int16_t* pcm_data = (int16_t*)buffer->data();
+    size_t num_samples = buffer->size() / 2;
+    audio_buffer_.insert(audio_buffer_.end(), pcm_data, pcm_data + num_samples);
     
-    // Ensure we don't overflow the input tensor
-    size_t input_byte_size = TfLiteTensorByteSize(melspec_input);
-    size_t copy_size = std::min((size_t)buffer->size(), input_byte_size);
+    float latest_probability = 0.0f;
     
-    // Convert 16-bit PCM to Float32 if required by the model, otherwise copy directly.
-    // OpenWakeWord tflite models typically take float32 input shape [1, 1280] or similar.
-    if (TfLiteTensorType(melspec_input) == kTfLiteFloat32) {
-        int16_t* pcm_data = (int16_t*)buffer->data();
-        float* input_data = (float*)TfLiteTensorData(melspec_input);
-        size_t num_samples = copy_size / 2;
-        for (size_t i = 0; i < num_samples; i++) {
-            input_data[i] = pcm_data[i] / 32768.0f;
+    // 2. Process audio in 1280-sample chunks
+    while (audio_buffer_.size() >= 1280) {
+        TfLiteTensor* melspec_input = TfLiteInterpreterGetInputTensor(melspec_interp_, 0);
+        float* melspec_input_data = (float*)TfLiteTensorData(melspec_input);
+        
+        // Normalize 16-bit PCM to float32
+        for (size_t i = 0; i < 1280; i++) {
+            melspec_input_data[i] = audio_buffer_[i] / 32768.0f;
         }
-    } else {
-        // Fallback raw copy
-        TfLiteTensorCopyFromBuffer(melspec_input, buffer->data(), copy_size);
+        
+        // Remove processed samples (sliding window)
+        audio_buffer_.erase(audio_buffer_.begin(), audio_buffer_.begin() + 1280);
+        
+        // Run Melspec
+        if (TfLiteInterpreterInvoke(melspec_interp_) != kTfLiteOk) continue;
+        const TfLiteTensor* melspec_output = TfLiteInterpreterGetOutputTensor(melspec_interp_, 0);
+        float* melspec_out_data = (float*)TfLiteTensorData(melspec_output);
+        
+        // Output is [1, 8, 32]. 8 frames of 32 features = 256 floats.
+        int num_melspec_floats_out = 8 * 32;
+        
+        // Shift melspec buffer left by 8 frames
+        shiftLeft(melspec_buffer_, num_melspec_floats_out);
+        
+        // Append new 8 frames at the end
+        std::memcpy(melspec_buffer_.data() + (melspec_buffer_.size() - num_melspec_floats_out), melspec_out_data, num_melspec_floats_out * sizeof(float));
+        
+        if (melspec_frames_filled_ < 76) {
+            melspec_frames_filled_ += 8;
+        }
+        
+        // 3. If melspec buffer is full (at least 76 frames), run Embedding model
+        if (melspec_frames_filled_ >= 76) {
+            TfLiteTensor* embedding_input = TfLiteInterpreterGetInputTensor(embedding_interp_, 0);
+            
+            // Embedding input shape [1, 76, 32, 1]
+            std::memcpy(TfLiteTensorData(embedding_input), melspec_buffer_.data(), 76 * 32 * sizeof(float));
+            
+            if (TfLiteInterpreterInvoke(embedding_interp_) != kTfLiteOk) continue;
+            const TfLiteTensor* embedding_output = TfLiteInterpreterGetOutputTensor(embedding_interp_, 0);
+            float* embedding_out_data = (float*)TfLiteTensorData(embedding_output);
+            
+            // Output is [1, 96]. 1 frame of 96 features.
+            int num_embedding_floats_out = 96;
+            
+            // Shift embedding buffer left by 1 frame
+            shiftLeft(embedding_buffer_, num_embedding_floats_out);
+            
+            // Append new 1 frame at the end
+            std::memcpy(embedding_buffer_.data() + (embedding_buffer_.size() - num_embedding_floats_out), embedding_out_data, num_embedding_floats_out * sizeof(float));
+            
+            if (embedding_frames_filled_ < 16) {
+                embedding_frames_filled_ += 1;
+            }
+            
+            // 4. If embedding buffer is full (at least 16 frames), run Wakeword model
+            if (embedding_frames_filled_ >= 16) {
+                TfLiteTensor* wakeword_input = TfLiteInterpreterGetInputTensor(wakeword_interp_, 0);
+                
+                // Wakeword input shape [1, 16, 96]
+                std::memcpy(TfLiteTensorData(wakeword_input), embedding_buffer_.data(), 16 * 96 * sizeof(float));
+                
+                if (TfLiteInterpreterInvoke(wakeword_interp_) != kTfLiteOk) continue;
+                const TfLiteTensor* wakeword_output = TfLiteInterpreterGetOutputTensor(wakeword_interp_, 0);
+                
+                latest_probability = ((float*)TfLiteTensorData(wakeword_output))[0];
+            }
+        }
     }
     
-    if (TfLiteInterpreterInvoke(melspec_interp_) != kTfLiteOk) return DetectionResult(0.0, false);
-    const TfLiteTensor* melspec_output = TfLiteInterpreterGetOutputTensor(melspec_interp_, 0);
-    
-    // 2. Feed Melspec Output to Embedding Input
-    TfLiteTensor* embedding_input = TfLiteInterpreterGetInputTensor(embedding_interp_, 0);
-    TfLiteTensorCopyFromBuffer(embedding_input, TfLiteTensorData(melspec_output), TfLiteTensorByteSize(melspec_output));
-    
-    if (TfLiteInterpreterInvoke(embedding_interp_) != kTfLiteOk) return DetectionResult(0.0, false);
-    const TfLiteTensor* embedding_output = TfLiteInterpreterGetOutputTensor(embedding_interp_, 0);
-    
-    // 3. Feed Embedding Output to Wakeword Input
-    TfLiteTensor* wakeword_input = TfLiteInterpreterGetInputTensor(wakeword_interp_, 0);
-    TfLiteTensorCopyFromBuffer(wakeword_input, TfLiteTensorData(embedding_output), TfLiteTensorByteSize(embedding_output));
-    
-    if (TfLiteInterpreterInvoke(wakeword_interp_) != kTfLiteOk) return DetectionResult(0.0, false);
-    const TfLiteTensor* wakeword_output = TfLiteInterpreterGetOutputTensor(wakeword_interp_, 0);
-    
-    // 4. Get probability
-    float probability = ((float*)TfLiteTensorData(wakeword_output))[0];
-    
-    return DetectionResult(probability, probability >= threshold_);
+    return DetectionResult(latest_probability, latest_probability >= threshold_);
 }
 
 void HybridOpenwakeword::setThreshold(double threshold) {
@@ -112,9 +154,12 @@ void HybridOpenwakeword::setThreshold(double threshold) {
 }
 
 void HybridOpenwakeword::reset() {
-    // TFLite models for OWW often have internal states (if exported as stateful).
-    // Resetting them typically requires re-allocating or invoking a specific reset op.
-    // For now, re-allocating tensors clears stateful RNN/LSTM buffers in TFLite.
+    audio_buffer_.clear();
+    melspec_buffer_.assign(76 * 32, 0.0f);
+    embedding_buffer_.assign(16 * 96, 0.0f);
+    melspec_frames_filled_ = 0;
+    embedding_frames_filled_ = 0;
+    
     if (melspec_interp_) TfLiteInterpreterAllocateTensors(melspec_interp_);
     if (embedding_interp_) TfLiteInterpreterAllocateTensors(embedding_interp_);
     if (wakeword_interp_) TfLiteInterpreterAllocateTensors(wakeword_interp_);
