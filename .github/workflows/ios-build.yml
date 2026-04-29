@@ -10,32 +10,22 @@ on:
     paths:
       - '.github/workflows/ios-build.yml'
       - 'example/ios/**'
-      - 'example/Gemfile'
-      - 'example/Gemfile.lock'
-      - '**/nitrogen/generated/shared/**'
-      - '**/nitrogen/generated/ios/**'
+      - 'example/App.tsx'
       - 'cpp/**'
       - 'ios/**'
-      - '**/Podfile.lock'
-      - '**/bun.lock'
+      - 'package-lock.json'
       - '**/*.podspec'
-      - '**/react-native.config.js'
-      - '**/nitro.json'
+      - 'nitro.json'
   pull_request:
     paths:
       - '.github/workflows/ios-build.yml'
       - 'example/ios/**'
-      - 'example/Gemfile'
-      - 'example/Gemfile.lock'
-      - '**/nitrogen/generated/shared/**'
-      - '**/nitrogen/generated/ios/**'
+      - 'example/App.tsx'
       - 'cpp/**'
       - 'ios/**'
-      - '**/Podfile.lock'
-      - '**/bun.lock'
+      - 'package-lock.json'
       - '**/*.podspec'
-      - '**/react-native.config.js'
-      - '**/nitro.json'
+      - 'nitro.json'
   workflow_dispatch:
 
 env:
@@ -51,14 +41,20 @@ jobs:
     runs-on: macOS-15
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: 16.4
+          xcode-version: 16.2 # Stable for macOS 15
 
-      - name: Install dependencies (bun)
-        run: bun install
+      - name: Install dependencies (npm)
+        run: npm install
 
       - name: Setup Ruby (bundle)
         uses: ruby/setup-ruby@v1
@@ -66,9 +62,6 @@ jobs:
           ruby-version: '3.2'
           bundler-cache: true
           working-directory: example/ios
-
-      - name: Install xcpretty
-        run: gem install xcpretty
 
       - name: Cache CocoaPods
         uses: actions/cache@v4
@@ -88,7 +81,6 @@ jobs:
         working-directory: example/ios
         run: |
           set -o pipefail && xcodebuild \
-            CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ \
             -derivedDataPath build -UseModernBuildSystem=YES \
             -workspace OpenwakewordExample.xcworkspace \
             -scheme OpenwakewordExample \
