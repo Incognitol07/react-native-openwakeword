@@ -56,6 +56,9 @@ jobs:
       - name: Install dependencies (npm)
         run: npm install
 
+      - name: Run Nitro Codegen
+        run: npx nitrogen
+
       - name: Setup Ruby (bundle)
         uses: ruby/setup-ruby@v1
         with:
