@@ -15,31 +15,39 @@ jobs:
     name: Build Android
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          bun-version: latest
+          node-version: 20
 
-      - name: Install dependencies
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies (bun)
         run: bun install
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - name: Setup JDK 17
+        uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
           java-version: '17'
+          cache: 'gradle'
 
       - name: Run Nitro Codegen
         run: bun x nitrogen
 
-      - name: Build Android
+      - name: Make Gradlew Executable
         working-directory: example/android
-        run: |
-          chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+        run: chmod +x gradlew
+
+      - name: Run Gradle build
+        working-directory: example/android
+        run: ./gradlew assembleDebug --no-daemon --build-cache
+
+      - name: Stop Gradle daemon
+        working-directory: example/android
+        run: ./gradlew --stop
 
   build-ios:
     name: Build iOS
