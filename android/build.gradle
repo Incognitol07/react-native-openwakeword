@@ -137,9 +137,6 @@ dependencies {
 
   // Add a dependency on NitroModules
   implementation project(":react-native-nitro-modules")
-
-  // TensorFlow Lite (must match the version fetched in CMakeLists.txt)
-  implementation "org.tensorflow:tensorflow-lite:2.14.0"
 }
 
 if (isNewArchitectureEnabled()) {
