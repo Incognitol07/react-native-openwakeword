@@ -2,6 +2,14 @@
 #include <iostream>
 #include <cstring>
 
+#ifdef __ANDROID__
+#include <android/log.h>
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "OpenWakeWord", __VA_ARGS__)
+#else
+#include <cstdio>
+#define LOGE(...) printf(__VA_ARGS__)
+#endif
+
 namespace margelo::nitro::openwakeword {
 
 HybridOpenwakeword::~HybridOpenwakeword() {
@@ -28,14 +36,6 @@ void HybridOpenwakeword::cleanupModels() {
     wakeword_model_ = nullptr;
     options_ = nullptr;
 }
-
-#ifdef __ANDROID__
-#include <android/log.h>
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "OpenWakeWord", __VA_ARGS__)
-#else
-#include <cstdio>
-#define LOGE(...) printf(__VA_ARGS__)
-#endif
 
 bool HybridOpenwakeword::loadModels(const std::string& melspecPath, const std::string& embeddingPath, const std::string& wakeWordPath) {
     cleanupModels();
