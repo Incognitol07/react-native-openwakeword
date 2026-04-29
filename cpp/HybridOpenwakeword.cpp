@@ -60,7 +60,7 @@ bool HybridOpenwakeword::loadModels(const std::string& melspecPath, const std::s
 }
 
 void HybridOpenwakeword::shiftLeft(std::vector<float>& buffer, int elements_to_shift) {
-    if (elements_to_shift <= 0 || elements_to_shift >= buffer.size()) return;
+    if (elements_to_shift <= 0 || static_cast<size_t>(elements_to_shift) >= buffer.size()) return;
     std::memmove(buffer.data(), buffer.data() + elements_to_shift, (buffer.size() - elements_to_shift) * sizeof(float));
 }
 
