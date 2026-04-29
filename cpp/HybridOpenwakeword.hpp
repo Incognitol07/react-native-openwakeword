@@ -4,7 +4,7 @@
 #include <string>
 #include "HybridOpenwakewordSpec.hpp"
 #ifdef __APPLE__
-#include <TensorFlowLiteC/tensorflow/lite/c/c_api.h>
+#include <TensorFlowLiteC/c_api.h>
 #else
 #include <tensorflow/lite/c/c_api.h>
 #endif
