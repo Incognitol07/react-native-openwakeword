@@ -12,6 +12,7 @@
 namespace margelo::nitro::openwakeword {
 class HybridOpenwakeword : public HybridOpenwakewordSpec {
     public:
+        static constexpr auto TAG = "Openwakeword";
         HybridOpenwakeword() : HybridObject(TAG), HybridOpenwakewordSpec(), threshold_(0.5) {
             // Pre-allocate sliding window buffers
             audio_buffer_.reserve(1280 * 2);
