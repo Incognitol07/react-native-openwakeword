@@ -144,7 +144,7 @@ jobs:
         run: bun run codegen
 
       - name: Upgrade npm
-        run: npm install -g npm@latest
+        run: bun install -g npm@latest
 
       - name: Release
         env:
