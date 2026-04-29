@@ -48,14 +48,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/incognitol07/react-native-openwakeword.git"
+    "url": "https://github.com/Incognitol07/react-native-openwakeword.git"
   },
-  "author": "incognitol07 <incognitol07@gmail.com>",
+  "author": "Incognitol07 <incognitol07@gmail.com>",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/incognitol07/react-native-openwakeword/issues"
+    "url": "https://github.com/Incognitol07/react-native-openwakeword/issues"
   },
-  "homepage": "https://github.com/incognitol07/react-native-openwakeword#readme",
+  "homepage": "https://github.com/Incognitol07/react-native-openwakeword#readme",
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
