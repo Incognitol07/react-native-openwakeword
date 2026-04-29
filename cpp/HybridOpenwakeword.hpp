@@ -3,7 +3,11 @@
 #include <vector>
 #include <string>
 #include "HybridOpenwakewordSpec.hpp"
+#ifdef __APPLE__
+#include <TensorFlowLiteC/TfLiteC.h>
+#else
 #include <tensorflow/lite/c/c_api.h>
+#endif
 
 namespace margelo::nitro::openwakeword {
 class HybridOpenwakeword : public HybridOpenwakewordSpec {
