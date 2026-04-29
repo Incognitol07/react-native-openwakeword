@@ -45,7 +45,7 @@
   ],
   "repository": "https://github.com/incognitoi07/react-native-openwakeword.git",
   "author": "IncognitoI07",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "bugs": "https://github.com/incognitoi07/react-native-openwakeword/issues",
   "homepage": "https://github.com/incognitoi07/react-native-openwakeword#readme",
   "publishConfig": {
