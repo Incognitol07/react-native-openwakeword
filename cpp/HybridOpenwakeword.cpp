@@ -29,6 +29,9 @@ void HybridOpenwakeword::cleanupModels() {
     options_ = nullptr;
 }
 
+#include <android/log.h>
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "OpenWakeWord", __VA_ARGS__)
+
 bool HybridOpenwakeword::loadModels(const std::string& melspecPath, const std::string& embeddingPath, const std::string& wakeWordPath) {
     cleanupModels();
     
@@ -37,24 +40,33 @@ bool HybridOpenwakeword::loadModels(const std::string& melspecPath, const std::s
     
     // Load Melspec
     melspec_model_ = TfLiteModelCreateFromFile(melspecPath.c_str());
-    if (!melspec_model_) return false;
+    if (!melspec_model_) { LOGE("Failed to create Melspec model from %s", melspecPath.c_str()); return false; }
     melspec_interp_ = TfLiteInterpreterCreate(melspec_model_, options_);
-    if (!melspec_interp_) return false;
-    if (TfLiteInterpreterAllocateTensors(melspec_interp_) != kTfLiteOk) return false;
+    if (!melspec_interp_) { LOGE("Failed to create Melspec interpreter"); return false; }
+    
+    int melspec_dims[2] = {1, 1280};
+    TfLiteInterpreterResizeInputTensor(melspec_interp_, 0, melspec_dims, 2);
+    if (TfLiteInterpreterAllocateTensors(melspec_interp_) != kTfLiteOk) { LOGE("Failed to allocate Melspec tensors"); return false; }
     
     // Load Embedding
     embedding_model_ = TfLiteModelCreateFromFile(embeddingPath.c_str());
-    if (!embedding_model_) return false;
+    if (!embedding_model_) { LOGE("Failed to create Embedding model from %s", embeddingPath.c_str()); return false; }
     embedding_interp_ = TfLiteInterpreterCreate(embedding_model_, options_);
-    if (!embedding_interp_) return false;
-    if (TfLiteInterpreterAllocateTensors(embedding_interp_) != kTfLiteOk) return false;
+    if (!embedding_interp_) { LOGE("Failed to create Embedding interpreter"); return false; }
+    
+    int embedding_dims[4] = {1, 76, 32, 1};
+    TfLiteInterpreterResizeInputTensor(embedding_interp_, 0, embedding_dims, 4);
+    if (TfLiteInterpreterAllocateTensors(embedding_interp_) != kTfLiteOk) { LOGE("Failed to allocate Embedding tensors"); return false; }
     
     // Load Wakeword
     wakeword_model_ = TfLiteModelCreateFromFile(wakeWordPath.c_str());
-    if (!wakeword_model_) return false;
+    if (!wakeword_model_) { LOGE("Failed to create Wakeword model from %s", wakeWordPath.c_str()); return false; }
     wakeword_interp_ = TfLiteInterpreterCreate(wakeword_model_, options_);
-    if (!wakeword_interp_) return false;
-    if (TfLiteInterpreterAllocateTensors(wakeword_interp_) != kTfLiteOk) return false;
+    if (!wakeword_interp_) { LOGE("Failed to create Wakeword interpreter"); return false; }
+    
+    int wakeword_dims[3] = {1, 16, 96};
+    TfLiteInterpreterResizeInputTensor(wakeword_interp_, 0, wakeword_dims, 3);
+    if (TfLiteInterpreterAllocateTensors(wakeword_interp_) != kTfLiteOk) { LOGE("Failed to allocate Wakeword tensors"); return false; }
     
     return true;
 }
@@ -81,9 +93,9 @@ DetectionResult HybridOpenwakeword::processFrame(const std::shared_ptr<ArrayBuff
         TfLiteTensor* melspec_input = TfLiteInterpreterGetInputTensor(melspec_interp_, 0);
         float* melspec_input_data = (float*)TfLiteTensorData(melspec_input);
         
-        // Normalize 16-bit PCM to float32
+        // OpenWakeWord expects raw PCM magnitudes as floats [-32768, 32767]
         for (size_t i = 0; i < 1280; i++) {
-            melspec_input_data[i] = audio_buffer_[i] / 32768.0f;
+            melspec_input_data[i] = (float)audio_buffer_[i];
         }
         
         // Remove processed samples (sliding window)
@@ -94,8 +106,11 @@ DetectionResult HybridOpenwakeword::processFrame(const std::shared_ptr<ArrayBuff
         const TfLiteTensor* melspec_output = TfLiteInterpreterGetOutputTensor(melspec_interp_, 0);
         float* melspec_out_data = (float*)TfLiteTensorData(melspec_output);
         
-        // Output is [1, 8, 32]. 8 frames of 32 features = 256 floats.
+        // Apply mandatory OpenWakeWord normalization: (val / 10.0) + 2.0
         int num_melspec_floats_out = 8 * 32;
+        for (int i = 0; i < num_melspec_floats_out; i++) {
+            melspec_out_data[i] = (melspec_out_data[i] / 10.0f) + 2.0f;
+        }
         
         // Shift melspec buffer left by 8 frames
         shiftLeft(melspec_buffer_, num_melspec_floats_out);
@@ -142,6 +157,9 @@ DetectionResult HybridOpenwakeword::processFrame(const std::shared_ptr<ArrayBuff
                 const TfLiteTensor* wakeword_output = TfLiteInterpreterGetOutputTensor(wakeword_interp_, 0);
                 
                 latest_probability = ((float*)TfLiteTensorData(wakeword_output))[0];
+                if (latest_probability > threshold_) {
+                   LOGE("[!!!] WAKE WORD DETECTED! Probability: %.4f", latest_probability);
+                }
             }
         }
     }
