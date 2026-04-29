@@ -73,7 +73,7 @@ jobs:
         with:
           ruby-version: '3.2'
           bundler-cache: true
-          working-directory: example/ios
+          working-directory: example
 
       - name: Install xcpretty
         run: gem install xcpretty
