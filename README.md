@@ -1,15 +1,18 @@
 # react-native-openwakeword
 
-react-native-openwakeword is a react native package for implementing wake word detection with openwakeword
+High-performance, **offline wake word detection** for React Native. Powered by the official [openWakeWord](https://github.com/dscripka/openWakeWord) models and built with the ultra-fast **Nitro JSI** bridge.
 
 [![Version](https://img.shields.io/npm/v/react-native-openwakeword.svg)](https://www.npmjs.com/package/react-native-openwakeword)
 [![Downloads](https://img.shields.io/npm/dm/react-native-openwakeword.svg)](https://www.npmjs.com/package/react-native-openwakeword)
-[![License](https://img.shields.io/npm/l/react-native-openwakeword.svg)](https://github.com/patrickkabwe/react-native-openwakeword/LICENSE)
+[![License](https://img.shields.io/npm/l/react-native-openwakeword.svg)](https://github.com/Incognitol07/react-native-openwakeword/blob/master/LICENSE)
+[![Platform](https://img.shields.io/badge/platform-ios%20%7C%20android-blue.svg)](https://github.com/incognitol07/react-native-openwakeword)
 
 ## Requirements
 
-- React Native v0.76.0 or higher
-- Node 18.0.0 or higher
+- React Native **v0.74.0** or higher
+- iOS **15.1** or higher
+- Android API **24** or higher
+- Node **20.0.0** or higher
 
 ## Installation
 
