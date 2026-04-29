@@ -9,8 +9,8 @@ set (CMAKE_CXX_STANDARD 20)
 add_compile_options(-DRN_SERIALIZABLE_STATE=1)
 
 # Fetch TensorFlow Lite AAR directly to get headers and prebuilt binaries
-set(TFLITE_VERSION "2.14.0")
-set(TFLITE_AAR_URL "https://maven.google.com/org/tensorflow/tensorflow-lite/${TFLITE_VERSION}/tensorflow-lite-${TFLITE_VERSION}.aar")
+set(TFLITE_VERSION "2.10.0")
+set(TFLITE_AAR_URL "https://repo1.maven.org/maven2/org/tensorflow/tensorflow-lite/${TFLITE_VERSION}/tensorflow-lite-${TFLITE_VERSION}.aar")
 
 include(FetchContent)
 FetchContent_Declare(
