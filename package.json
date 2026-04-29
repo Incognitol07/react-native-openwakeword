@@ -1,6 +1,6 @@
 {
   "name": "react-native-openwakeword",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "High-performance, offline wake word detection for React Native built with Nitro. Cross-platform (iOS/Android) and powered by openWakeWord.",
   "main": "./lib/commonjs/index.js",
   "module": "./lib/module/index.js",
@@ -46,15 +46,19 @@
   "workspaces": [
     "example"
   ],
-  "repository": "https://github.com/incognitol07/react-native-openwakeword.git",
-  "author": "incognitol07",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/incognitol07/react-native-openwakeword.git"
+  },
+  "author": "incognitol07 <incognitol07@gmail.com>",
   "license": "Apache-2.0",
-  "bugs": "https://github.com/incognitol07/react-native-openwakeword/issues",
+  "bugs": {
+    "url": "https://github.com/incognitol07/react-native-openwakeword/issues"
+  },
   "homepage": "https://github.com/incognitol07/react-native-openwakeword#readme",
   "publishConfig": {
     "access": "public",
-    "registry": "https://registry.npmjs.org/",
-    "provenance": true
+    "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
     "@jamesacarr/eslint-formatter-github-actions": "^0.2.0",
