@@ -32,4 +32,8 @@ Pod::Spec.new do |s|
   s.dependency 'TensorFlowLiteC', '2.14.0'
   
   install_modules_dependencies(s)
+
+  s.pod_target_xcconfig = {
+    "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/cpp\" \"$(PODS_TARGET_SRCROOT)/nitrogen/generated/shared\" \"$(PODS_TARGET_SRCROOT)/nitrogen/generated/ios\""
+  }
 end

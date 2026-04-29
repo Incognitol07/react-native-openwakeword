@@ -33,6 +33,7 @@ void HybridOpenwakeword::cleanupModels() {
 #include <android/log.h>
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "OpenWakeWord", __VA_ARGS__)
 #else
+#include <cstdio>
 #define LOGE(...) printf(__VA_ARGS__)
 #endif
 
