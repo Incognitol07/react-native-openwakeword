@@ -35,7 +35,7 @@ Pod::Spec.new do |s|
 
   current_config = s.attributes_hash['pod_target_xcconfig'] || {}
   s.pod_target_xcconfig = current_config.merge({
-    "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/cpp\" \"$(PODS_TARGET_SRCROOT)/nitrogen/generated/shared\" \"$(PODS_TARGET_SRCROOT)/nitrogen/generated/ios\" \"$(PODS_TARGET_SRCROOT)/nitrogen/generated/shared/c++\" \"$(PODS_TARGET_SRCROOT)/nitrogen/generated/ios/c++\"",
+    "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/cpp\" \"$(PODS_TARGET_SRCROOT)/nitrogen/generated/shared\" \"$(PODS_TARGET_SRCROOT)/nitrogen/generated/ios\" \"$(PODS_TARGET_SRCROOT)/nitrogen/generated/shared/c++\" \"$(PODS_TARGET_SRCROOT)/nitrogen/generated/ios/c++\" \"$(PODS_ROOT)/TensorFlowLiteC/Frameworks/TensorFlowLiteC.xcframework/ios-arm64/Headers\" \"$(PODS_ROOT)/TensorFlowLiteC/Frameworks/TensorFlowLiteC.xcframework/ios-arm64_x86_64-simulator/Headers\"",
     "OTHER_CPLUSPLUSFLAGS" => "-fcxx-modules",
     "CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES" => "YES",
     "SWIFT_CXX_INTEROPERABILITY_MODE" => "default",
