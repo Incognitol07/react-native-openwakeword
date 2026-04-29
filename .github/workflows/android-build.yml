@@ -53,6 +53,10 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
+      - name: Make Gradlew Executable
+        working-directory: example/android
+        run: chmod +x gradlew
+
       - name: Run Gradle build
         working-directory: example/android
         run: ./gradlew assembleDebug --no-daemon --build-cache
