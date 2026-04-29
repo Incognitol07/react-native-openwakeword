@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/Incognitol07/react-native-openwakeword/compare/v1.0.0...v1.0.1) (2026-04-29)
+
+
+### Bug Fixes
+
+* update version to 1.1.0 in package.json ([6de376e](https://github.com/Incognitol07/react-native-openwakeword/commit/6de376e6f5c29764cf768af9320fcb07f51f84a3))
+
 # 1.0.0 (2026-04-29)
 
 
