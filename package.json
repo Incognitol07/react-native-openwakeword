@@ -12,8 +12,7 @@
     "clean": "git clean -dfX",
     "release": "semantic-release",
     "build": "npm run typecheck && bob build",
-    "codegen": "nitrogen --logLevel=\"debug\" && npm run build",
-    "postcodegen": "npm --prefix example run pod"
+    "codegen": "nitrogen --logLevel=\"debug\" && npm run build"
   },
   "keywords": [
     "react-native",
