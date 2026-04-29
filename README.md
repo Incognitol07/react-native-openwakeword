@@ -22,7 +22,7 @@ npm install react-native-openwakeword react-native-nitro-modules
 
 ## Usage
 
-`react-native-openwakeword` is designed as a blazing-fast, zero-copy inference engine built with Nitro. It strictly handles the heavy lifting of machine learning detection. **You must bring your own audio capture library** (such as `react-native-audio-api` or `react-native-live-audio-stream`).
+`react-native-openwakeword` is a wake word inference engine built with Nitro. It handles the machine learning detection. **You must bring your own audio capture library** (such as `react-native-audio-api` or `react-native-live-audio-stream`).
 
 ### 1. Preparing the Models
 The library uses TensorFlow Lite to run the official [openWakeWord](https://github.com/dscripka/openWakeWord) models. You need three `.tflite` models:
@@ -75,6 +75,12 @@ Because the wake word models are stateful and accumulate context over time, you 
 ```typescript
 Openwakeword.reset();
 ```
+
+## Testing and Tuning
+The `example/` directory contains a testing environment to:
+- **Test**: See real-time feedback for model confidence and room noise.
+- **Tune**: Find the right sensitivity threshold for your environment.
+- **Benchmark**: Check how your device microphone performs.
 
 ## Credits
 Bootstrapped with [create-nitro-module](https://github.com/patrickkabwe/create-nitro-module).
