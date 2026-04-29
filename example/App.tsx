@@ -237,18 +237,23 @@ const AppContent = () => {
         if (granted !== PermissionsAndroid.RESULTS.GRANTED) return;
       }
 
-      const copyAsset = async (fileName: string) => {
-        const dest = `${RNFS.DocumentDirectoryPath}/${fileName}`;
-        if (await RNFS.exists(dest)) await RNFS.unlink(dest);
-        await RNFS.copyFileAssets(`models/${fileName}`, dest);
-        return dest;
+      const getModelPath = async (fileName: string) => {
+        if (Platform.OS === 'android') {
+          const dest = `${RNFS.DocumentDirectoryPath}/${fileName}`;
+          if (await RNFS.exists(dest)) await RNFS.unlink(dest);
+          await RNFS.copyFileAssets(`models/${fileName}`, dest);
+          return dest;
+        } else {
+          // On iOS, files bundled via Xcode are in the MainBundle
+          return `${RNFS.MainBundlePath}/${fileName}`;
+        }
       };
 
       try {
         const paths = await Promise.all([
-          copyAsset('melspectrogram.tflite'),
-          copyAsset('embedding_model.tflite'),
-          copyAsset('wakeword.tflite'),
+          getModelPath('melspectrogram.tflite'),
+          getModelPath('embedding_model.tflite'),
+          getModelPath('wakeword.tflite'),
         ]);
 
         if (Openwakeword.loadModels(paths[0], paths[1], paths[2])) {
@@ -365,8 +370,8 @@ const AppContent = () => {
           </Text>
         </Pressable>
         <Text style={styles.versionNote}>react-native-openwakeword</Text>
+        </View>
       </View>
-    </View>
   );
 };
 
