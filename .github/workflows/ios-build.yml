@@ -96,7 +96,6 @@ jobs:
         working-directory: example/ios
         run: |
           set -o pipefail && xcodebuild \
-            CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ \
             -derivedDataPath build -UseModernBuildSystem=YES \
             -workspace OpenwakewordExample.xcworkspace \
             -scheme OpenwakewordExample \

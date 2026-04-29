@@ -34,6 +34,8 @@ Pod::Spec.new do |s|
   install_modules_dependencies(s)
 
   s.pod_target_xcconfig = {
-    "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/cpp\" \"$(PODS_TARGET_SRCROOT)/nitrogen/generated/shared\" \"$(PODS_TARGET_SRCROOT)/nitrogen/generated/ios\""
+    "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/cpp\" \"$(PODS_TARGET_SRCROOT)/nitrogen/generated/shared\" \"$(PODS_TARGET_SRCROOT)/nitrogen/generated/ios\" \"$(PODS_TARGET_SRCROOT)/nitrogen/generated/shared/c++\" \"$(PODS_TARGET_SRCROOT)/nitrogen/generated/ios/c++\"",
+    "OTHER_CPLUSPLUSFLAGS" => "-fcxx-modules",
+    "CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES" => "YES"
   }
 end
