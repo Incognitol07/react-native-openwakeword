@@ -1,0 +1,21 @@
+# Exclude development directory
+example/
+
+# Exclude build artifacts
+android/build/
+ios/build/
+lib/typescript/example/
+
+# Exclude configuration files
+.eslintrc.js
+.prettierrc.js
+.watchmanconfig
+tsconfig.json
+tsconfig.tsbuildinfo
+babel.config.js
+release.config.cjs
+
+# Exclude Git metadata
+.git/
+.github/
+.gitignore
