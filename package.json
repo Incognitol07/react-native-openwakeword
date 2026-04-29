@@ -46,11 +46,11 @@
   "workspaces": [
     "example"
   ],
-  "repository": "https://github.com/incognitoi07/react-native-openwakeword.git",
-  "author": "IncognitoI07",
+  "repository": "https://github.com/incognitol07/react-native-openwakeword.git",
+  "author": "incognitol07",
   "license": "Apache-2.0",
-  "bugs": "https://github.com/incognitoi07/react-native-openwakeword/issues",
-  "homepage": "https://github.com/incognitoi07/react-native-openwakeword#readme",
+  "bugs": "https://github.com/incognitol07/react-native-openwakeword/issues",
+  "homepage": "https://github.com/incognitol07/react-native-openwakeword#readme",
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
