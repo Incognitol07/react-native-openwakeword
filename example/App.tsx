@@ -19,7 +19,10 @@ import RNFS from 'react-native-fs';
 import { Buffer } from 'buffer';
 
 // Suppress legacy library warnings
-LogBox.ignoreLogs(['new NativeEventEmitter()']);
+LogBox.ignoreLogs([
+  'new NativeEventEmitter()',
+  'Style property \'shadowColor\' is not supported',
+]);
 
 // --- Design Tokens (System Pro) ---
 const COLORS = {
@@ -77,7 +80,7 @@ const StatusOrb = ({
     
     if (detected) {
       // Success pop
-      opacity.setValue(1);
+      Animated.timing(opacity, { toValue: 1, duration: 100, useNativeDriver: true }).start();
       Animated.sequence([
         Animated.spring(scale, { toValue: 1.25, friction: 4, useNativeDriver: true }),
         Animated.spring(scale, { toValue: 1, useNativeDriver: true }),
@@ -125,19 +128,25 @@ const StatusOrb = ({
       
       <Animated.View
         style={[
-          styles.orb,
+          styles.orbWrapper,
           {
-            backgroundColor: orbColor,
             opacity: opacity,
             transform: [{ scale: scale }],
-            shadowColor: orbColor,
-          },
-          (isListening || detected) ? styles.orbActiveShadow : styles.orbInactiveShadow,
+          }
         ]}
       >
-        <Text style={styles.orbStatusText}>
-          {detected ? 'Detected!' : isListening ? 'Listening' : 'Ready'}
-        </Text>
+        <Animated.View
+          style={[
+            styles.orb,
+            {
+              backgroundColor: orbColor,
+            },
+          ]}
+        >
+          <Text style={styles.orbStatusText}>
+            {detected ? 'Detected!' : isListening ? 'Listening' : 'Ready'}
+          </Text>
+        </Animated.View>
       </Animated.View>
     </View>
   );
@@ -187,7 +196,6 @@ const PrecisionClicker = ({
         ]}
       >
         <Text style={styles.clickerButtonText}>-</Text>
-        <Text style={styles.clickerSubLabel}>RELAXED</Text>
       </Pressable>
 
       <View style={styles.clickerDisplay}>
@@ -203,7 +211,6 @@ const PrecisionClicker = ({
         ]}
       >
         <Text style={styles.clickerButtonText}>+</Text>
-        <Text style={styles.clickerSubLabel}>STRICT</Text>
       </Pressable>
     </View>
   );
@@ -318,7 +325,7 @@ const AppContent = () => {
           <View style={styles.statusRow}>
             <View style={[styles.statusIndicator, isReady && { backgroundColor: COLORS.success }]} />
             <Text style={styles.statusLabel}>
-              {isReady ? 'System ready' : 'Connecting sensors...'}
+              {isReady ? 'Ready to use' : 'Loading models...'}
             </Text>
           </View>
         </View>
@@ -337,7 +344,7 @@ const AppContent = () => {
         <View style={styles.calibrationCard}>
           <PrecisionClicker value={sensitivity} onValueChange={setSensitivity} />
           <Text style={styles.calibrationTip}>
-            Strict avoids false triggers. Relaxed improves sensitivity.
+            Lower if it's missing your voice. Raise if it's triggering by mistake.
           </Text>
         </View>
       </ScrollView>
@@ -426,22 +433,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: SPACING.xl,
   },
-  orb: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
+  orbWrapper: {
+    position: 'absolute',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  orbActiveShadow: {
-    shadowOpacity: 0.4,
-    shadowRadius: 20,
-    elevation: 10,
-  },
-  orbInactiveShadow: {
-    shadowOpacity: 0,
-    shadowRadius: 0,
-    elevation: 0,
+  orb: {
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   orbStatusText: {
     fontSize: 17,
