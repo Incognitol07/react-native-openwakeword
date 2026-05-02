@@ -2,10 +2,11 @@
 
 High-performance, **offline wake word detection** for React Native. Powered by the official [openWakeWord](https://github.com/dscripka/openWakeWord) models and built with the ultra-fast **Nitro JSI** bridge.
 
+[![CI](https://github.com/incognitol07/react-native-openwakeword/actions/workflows/ci.yml/badge.svg)](https://github.com/incognitol07/react-native-openwakeword/actions/workflows/ci.yml)
 [![Version](https://img.shields.io/npm/v/react-native-openwakeword.svg)](https://www.npmjs.com/package/react-native-openwakeword)
 [![Platform](https://img.shields.io/badge/platform-ios%20%7C%20android-blue.svg)](https://www.npmjs.com/package/react-native-openwakeword)
+[![Downloads](https://img.shields.io/npm/dm/react-native-openwakeword.svg)](https://www.npmjs.com/package/react-native-openwakeword)
 [![License](https://img.shields.io/npm/l/react-native-openwakeword.svg)](https://www.npmjs.com/package/react-native-openwakeword)
-<!-- [![Downloads](https://img.shields.io/npm/dm/react-native-openwakeword.svg)](https://www.npmjs.com/package/react-native-openwakeword) -->
 
 ## Requirements
 
