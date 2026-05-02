@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/Incognitol07/react-native-openwakeword/compare/v1.0.1...v1.0.2) (2026-04-30)
+
+
+### Bug Fixes
+
+* correct comment formatting in README.md ([b1eed43](https://github.com/Incognitol07/react-native-openwakeword/commit/b1eed43857103e2049c37e4f73784a874b77c155))
+
 ## [1.0.1](https://github.com/Incognitol07/react-native-openwakeword/compare/v1.0.0...v1.0.1) (2026-04-29)
 
 
