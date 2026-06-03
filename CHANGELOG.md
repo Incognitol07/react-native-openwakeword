@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/Incognitol07/react-native-openwakeword/compare/v2.0.0...v2.1.0) (2026-06-03)
+
+
+### Features
+
+* add ccache support for Android and iOS builds in CI pipeline ([3cdf7be](https://github.com/Incognitol07/react-native-openwakeword/commit/3cdf7be6c05dce839505de39e0a22bdce40fe97e))
+
 # [2.0.0](https://github.com/Incognitol07/react-native-openwakeword/compare/v1.0.3...v2.0.0) (2026-06-03)
 
 
