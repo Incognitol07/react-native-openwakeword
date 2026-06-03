@@ -1,3 +1,13 @@
+# [2.0.0](https://github.com/Incognitol07/react-native-openwakeword/compare/v1.0.3...v2.0.0) (2026-06-03)
+
+
+* feat!: optimize build configurations and enhance HybridOpenwakeword performance ([50fe851](https://github.com/Incognitol07/react-native-openwakeword/commit/50fe8515e9b135d424beb457ea9977af28f70777))
+
+
+### BREAKING CHANGES
+
+* Build configurations now delegate optimizations strictly to CMake, removing redundant build types from Gradle. Internal C++ data structures have been migrated to custom ring buffers.
+
 ## [1.0.3](https://github.com/Incognitol07/react-native-openwakeword/compare/v1.0.2...v1.0.3) (2026-05-02)
 
 
