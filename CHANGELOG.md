@@ -1,3 +1,11 @@
+## [1.0.3](https://github.com/Incognitol07/react-native-openwakeword/compare/v1.0.2...v1.0.3) (2026-05-02)
+
+
+### Bug Fixes
+
+* update license badge link in README.md ([680dd95](https://github.com/Incognitol07/react-native-openwakeword/commit/680dd953d60c1e49d17aa775d5790802a2a0dcf6))
+* update README.md to include downloads badge ([36e8fad](https://github.com/Incognitol07/react-native-openwakeword/commit/36e8fadc225d022eb625e414d1eaf50b00dc7337))
+
 ## [1.0.2](https://github.com/Incognitol07/react-native-openwakeword/compare/v1.0.1...v1.0.2) (2026-04-30)
 
 
