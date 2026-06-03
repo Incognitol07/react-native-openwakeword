@@ -52,6 +52,10 @@ android {
         // owned by CMakeLists.txt per-ABI so there is no conflict here.
         cppFlags "-frtti -fexceptions -Wall -Wextra -fstack-protector-all"
         arguments "-DANDROID_STL=c++_shared", "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
+        if (System.getenv("CMAKE_C_COMPILER_LAUNCHER") != null) {
+          arguments "-DCMAKE_C_COMPILER_LAUNCHER=${System.getenv("CMAKE_C_COMPILER_LAUNCHER")}",
+                    "-DCMAKE_CXX_COMPILER_LAUNCHER=${System.getenv("CMAKE_CXX_COMPILER_LAUNCHER")}"
+        }
         abiFilters (*reactNativeArchitectures())
       }
     }
