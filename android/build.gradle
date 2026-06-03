@@ -48,18 +48,11 @@ android {
 
     externalNativeBuild {
       cmake {
+        // Warnings + ABI flags only. Optimisation (-O3/-ffast-math/-march) is
+        // owned by CMakeLists.txt per-ABI so there is no conflict here.
         cppFlags "-frtti -fexceptions -Wall -Wextra -fstack-protector-all"
         arguments "-DANDROID_STL=c++_shared", "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
         abiFilters (*reactNativeArchitectures())
-
-        buildTypes {
-          debug {
-            cppFlags "-O1 -g"
-          }
-          release {
-            cppFlags "-O2"
-          }
-        }
       }
     }
   }
