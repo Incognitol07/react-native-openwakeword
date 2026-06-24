@@ -29,7 +29,7 @@ jobs:
         run: echo "dir=$(bun pm cache)" >> $GITHUB_OUTPUT
 
       - name: Cache Bun dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ${{ steps.bun-cache-dir.outputs.dir }}
           key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock') }}
@@ -50,7 +50,7 @@ jobs:
         run: sudo apt-get install -y ccache
 
       - name: Cache ccache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.ccache
           key: ${{ runner.os }}-android-ccache-${{ github.sha }}
@@ -102,7 +102,7 @@ jobs:
         run: echo "dir=$(bun pm cache)" >> $GITHUB_OUTPUT
 
       - name: Cache Bun dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ${{ steps.bun-cache-dir.outputs.dir }}
           key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock') }}
@@ -116,7 +116,7 @@ jobs:
         run: brew install ccache
 
       - name: Cache ccache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.ccache
           key: ${{ runner.os }}-ios-ccache-${{ github.sha }}
@@ -145,7 +145,7 @@ jobs:
         run: gem install xcpretty
 
       - name: Cache CocoaPods
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cocoapods/repos
@@ -205,7 +205,7 @@ jobs:
         run: echo "dir=$(bun pm cache)" >> $GITHUB_OUTPUT
 
       - name: Cache Bun dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ${{ steps.bun-cache-dir.outputs.dir }}
           key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock') }}
