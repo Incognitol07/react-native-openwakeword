@@ -1,3 +1,28 @@
+# [2.1.0](https://github.com/Incognitol07/react-native-openwakeword/compare/v2.0.0...v2.1.0) (2026-06-03)
+
+
+### Features
+
+* add ccache support for Android and iOS builds in CI pipeline ([3cdf7be](https://github.com/Incognitol07/react-native-openwakeword/commit/3cdf7be6c05dce839505de39e0a22bdce40fe97e))
+
+# [2.0.0](https://github.com/Incognitol07/react-native-openwakeword/compare/v1.0.3...v2.0.0) (2026-06-03)
+
+
+* feat!: optimize build configurations and enhance HybridOpenwakeword performance ([50fe851](https://github.com/Incognitol07/react-native-openwakeword/commit/50fe8515e9b135d424beb457ea9977af28f70777))
+
+
+### BREAKING CHANGES
+
+* Build configurations now delegate optimizations strictly to CMake, removing redundant build types from Gradle. Internal C++ data structures have been migrated to custom ring buffers.
+
+## [1.0.3](https://github.com/Incognitol07/react-native-openwakeword/compare/v1.0.2...v1.0.3) (2026-05-02)
+
+
+### Bug Fixes
+
+* update license badge link in README.md ([680dd95](https://github.com/Incognitol07/react-native-openwakeword/commit/680dd953d60c1e49d17aa775d5790802a2a0dcf6))
+* update README.md to include downloads badge ([36e8fad](https://github.com/Incognitol07/react-native-openwakeword/commit/36e8fadc225d022eb625e414d1eaf50b00dc7337))
+
 ## [1.0.2](https://github.com/Incognitol07/react-native-openwakeword/compare/v1.0.1...v1.0.2) (2026-04-30)
 
 
