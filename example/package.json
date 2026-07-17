@@ -13,7 +13,7 @@
   "dependencies": {
     "@react-native/new-app-screen": "0.85.3",
     "buffer": "^6.0.3",
-    "react": "19.2.5",
+    "react": "19.2.7",
     "react-native": "0.86.0",
     "react-native-fs": "^2.20.0",
     "react-native-live-audio-stream": "^1.1.1",
