@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/Incognitol07/react-native-openwakeword/compare/v2.1.0...v2.2.0) (2026-08-15)
+
+
+### Features
+
+* Add postinstall script to enhance user experience after installation ([de9c08a](https://github.com/Incognitol07/react-native-openwakeword/commit/de9c08a8637acdf9e633dd179444a86431ead09d))
+
 # [2.1.0](https://github.com/Incognitol07/react-native-openwakeword/compare/v2.0.0...v2.1.0) (2026-06-03)
 
 
