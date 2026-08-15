@@ -8,6 +8,7 @@
   "react-native": "src/index",
   "source": "src/index",
   "scripts": {
+    "postinstall": "node scripts/postinstall.js",
     "typecheck": "tsc --noEmit",
     "clean": "git clean -dfX",
     "release": "semantic-release",
@@ -27,6 +28,7 @@
     "audio-processing"
   ],
   "files": [
+    "scripts/postinstall.js",
     "src/",
     "react-native.config.js",
     "lib/",
