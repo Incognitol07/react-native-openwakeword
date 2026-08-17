@@ -1,3 +1,28 @@
+# [3.0.0](https://github.com/Incognitol07/react-native-openwakeword/compare/v2.2.0...v3.0.0) (2026-08-17)
+
+
+* feat!: rework wake word detector API for error handling and lifecycle safety ([b20c5fa](https://github.com/Incognitol07/react-native-openwakeword/commit/b20c5fa315e6ad27e11d2d747f0768c19af47f38))
+
+
+### BREAKING CHANGES
+
+* Openwakeword.loadModels(...): boolean is replaced by
+Openwakeword.createDetector(paths: ModelPaths): Promise<WakeWordDetector>.
+Model load failures now throw descriptive Errors instead of returning
+false, and setThreshold throws for values outside 0.0-1.0 instead of
+silently accepting them. processFrame/setThreshold/reset are only
+reachable on the WakeWordDetector returned by createDetector, so a
+detector can no longer be used before its models finish loading.
+
+Model loading now runs on a background thread instead of blocking the
+calling thread, and a mutex guards native model state so it can safely
+overlap with in-flight processFrame/reset calls. Switching wake words
+at runtime (calling createDetector again) is now a supported operation.
+
+Verified on-device: real detection, all thrown-error paths, threshold
+boundaries, malformed audio buffers, detector reload, and a concurrency
+stress test racing model loading against processFrame/reset/setThreshold.
+
 # [2.2.0](https://github.com/Incognitol07/react-native-openwakeword/compare/v2.1.0...v2.2.0) (2026-08-15)
 
 
