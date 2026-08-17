@@ -1,6 +1,8 @@
 #include "HybridOpenwakeword.hpp"
 #include <cstring>
 #include <chrono>
+#include <stdexcept>
+#include <string>
 
 #ifdef __ANDROID__
   #include <android/log.h>
@@ -133,9 +135,9 @@ void HybridOpenwakeword::cleanupModels() {
 }
 
 // ── loadModels ────────────────────────────────────────────────────────────
-bool HybridOpenwakeword::loadModels(const std::string& melspecPath,
-                                     const std::string& embeddingPath,
-                                     const std::string& wakeWordPath) {
+void HybridOpenwakeword::loadModelsSync(const ModelPaths& paths) {
+    std::lock_guard<std::mutex> lock(model_mutex_);
+
     cleanupModels();
 
     const int threads = optimal_threads();
@@ -164,34 +166,45 @@ bool HybridOpenwakeword::loadModels(const std::string& melspecPath,
 #endif
 
     // Helper: load a model file, create its interpreter, resize + allocate tensors.
+    // Throws a descriptive std::runtime_error naming the failing path/stage.
     auto load_model = [&](const std::string& path,
+                          const char*         stage,
                           TfLiteModel**       out_model,
                           TfLiteInterpreter** out_interp,
-                          int dims[], int ndims) -> bool {
+                          int dims[], int ndims) {
         *out_model = TfLiteModelCreateFromFile(path.c_str());
-        if (!*out_model) { LOGE("Failed to load model: %s", path.c_str()); return false; }
+        if (!*out_model) {
+            throw std::runtime_error(
+                std::string("Failed to load ") + stage + " model: could not read or parse '" + path + "'");
+        }
 
         *out_interp = TfLiteInterpreterCreate(*out_model, options_);
-        if (!*out_interp) { LOGE("Failed to create interpreter: %s", path.c_str()); return false; }
+        if (!*out_interp) {
+            throw std::runtime_error(
+                std::string("Failed to create interpreter for ") + stage + " model: '" + path + "'");
+        }
 
         TfLiteInterpreterResizeInputTensor(*out_interp, 0, dims, ndims);
         if (TfLiteInterpreterAllocateTensors(*out_interp) != kTfLiteOk) {
-            LOGE("Failed to allocate tensors: %s", path.c_str());
-            return false;
+            throw std::runtime_error(
+                std::string("Failed to allocate tensors for ") + stage + " model: '" + path +
+                "' (unexpected input shape for this model stage)");
         }
-        return true;
     };
 
     int melspec_dims[2]   = {1, 1280};       // [batch, pcm_samples]
     int embedding_dims[4] = {1, 76, 32, 1};  // [batch, frames, bins, channels]
     int wakeword_dims[3]  = {1, 16, 96};     // [batch, frames, features]
 
-    if (!load_model(melspecPath,   &melspec_model_,   &melspec_interp_,   melspec_dims,   2)) return false;
-    if (!load_model(embeddingPath, &embedding_model_, &embedding_interp_, embedding_dims, 4)) return false;
-    if (!load_model(wakeWordPath,  &wakeword_model_,  &wakeword_interp_,  wakeword_dims,  3)) return false;
+    load_model(paths.melspecPath,   "melspec",   &melspec_model_,   &melspec_interp_,   melspec_dims,   2);
+    load_model(paths.embeddingPath, "embedding", &embedding_model_, &embedding_interp_, embedding_dims, 4);
+    load_model(paths.wakeWordPath,  "wake word", &wakeword_model_,  &wakeword_interp_,  wakeword_dims,  3);
 
     LOGD("OpenWakeWord models loaded. Threads: %d", threads);
-    return true;
+}
+
+std::shared_ptr<Promise<void>> HybridOpenwakeword::loadModels(const ModelPaths& paths) {
+    return Promise<void>::async([this, paths]() { loadModelsSync(paths); });
 }
 
 // ── processFrame  (hot path) ──────────────────────────────────────────────
@@ -206,8 +219,12 @@ bool HybridOpenwakeword::loadModels(const std::string& melspecPath,
 // All tensor writes go directly to TFLite's backing buffers — zero extra copy.
 // ─────────────────────────────────────────────────────────────────────────
 DetectionResult HybridOpenwakeword::processFrame(const std::shared_ptr<ArrayBuffer>& buffer) {
+    std::lock_guard<std::mutex> lock(model_mutex_);
+
     if (__builtin_expect(!melspec_interp_ || !embedding_interp_ || !wakeword_interp_, 0)) {
-        return DetectionResult(0.0, false);
+        throw std::runtime_error(
+            "processFrame() called on a detector whose models are not loaded. "
+            "Use Openwakeword.createDetector(paths) and await it before calling processFrame().");
     }
 
     const bool perf_on = perf_logging_enabled();
@@ -327,10 +344,16 @@ DetectionResult HybridOpenwakeword::processFrame(const std::shared_ptr<ArrayBuff
 
 // ── setThreshold / reset ──────────────────────────────────────────────────
 void HybridOpenwakeword::setThreshold(double threshold) {
+    if (threshold < 0.0 || threshold > 1.0) {
+        throw std::invalid_argument(
+            "threshold must be between 0.0 and 1.0 (received " + std::to_string(threshold) + ")");
+    }
     threshold_ = threshold;
 }
 
 void HybridOpenwakeword::reset() {
+    std::lock_guard<std::mutex> lock(model_mutex_);
+
     audio_ring_.clear();
     mel_ring_.clear();
     emb_ring_.clear();

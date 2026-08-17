@@ -4,6 +4,7 @@
 #include <cstring>
 #include <algorithm>
 #include <cstdint>
+#include <mutex>
 #include "HybridOpenwakewordSpec.hpp"
 
 // ── Platform TFLite headers ───────────────────────────────────────────────
@@ -145,9 +146,7 @@ public:
     HybridOpenwakeword() : HybridObject(TAG), HybridOpenwakewordSpec() {}
     ~HybridOpenwakeword() override;
 
-    bool loadModels(const std::string& melspecPath,
-                    const std::string& embeddingPath,
-                    const std::string& wakeWordPath) override;
+    std::shared_ptr<Promise<void>> loadModels(const ModelPaths& paths) override;
     DetectionResult processFrame(const std::shared_ptr<ArrayBuffer>& buffer) override;
     void setThreshold(double threshold) override;
     void reset() override;
@@ -199,7 +198,16 @@ private:
     EmbRing   emb_ring_;
     PerfStats perf_;
 
+    // Guards the model/interpreter pointers above: loadModels() runs on a
+    // background thread (see Promise::async in loadModels()), while
+    // processFrame()/reset() may be called from the JS thread concurrently.
+    std::mutex model_mutex_;
+
     void cleanupModels();
+
+    // Does the actual (blocking) model loading; runs on a background thread.
+    // Throws std::runtime_error with a descriptive message on failure.
+    void loadModelsSync(const ModelPaths& paths);
 
     // Returns optimal XNNPACK/interpreter thread count for this CPU.
     static int optimal_threads();

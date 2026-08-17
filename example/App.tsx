@@ -13,7 +13,7 @@ import {
   LogBox,
 } from 'react-native';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Openwakeword } from 'react-native-openwakeword';
+import { Openwakeword, type WakeWordDetector } from 'react-native-openwakeword';
 import LiveAudioStream from 'react-native-live-audio-stream';
 import RNFS from 'react-native-fs';
 import { Buffer } from 'buffer';
@@ -218,7 +218,8 @@ const PrecisionClicker = ({
 
 const AppContent = () => {
   const insets = useSafeAreaInsets();
-  
+  const detectorRef = useRef<WakeWordDetector | null>(null);
+
   // Engine State
   const [isReady, setIsReady] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -250,15 +251,14 @@ const AppContent = () => {
       };
 
       try {
-        const paths = await Promise.all([
+        const [melspecPath, embeddingPath, wakeWordPath] = await Promise.all([
           getModelPath('melspectrogram.tflite'),
           getModelPath('embedding_model.tflite'),
           getModelPath('wakeword.tflite'),
         ]);
 
-        if (Openwakeword.loadModels(paths[0], paths[1], paths[2])) {
-          setIsReady(true);
-        }
+        detectorRef.current = await Openwakeword.createDetector({ melspecPath, embeddingPath, wakeWordPath });
+        setIsReady(true);
       } catch (e) {
         console.error('Initialization failed:', e);
       }
@@ -294,7 +294,8 @@ const AppContent = () => {
         }
         setNoise(Math.min(maxSample / 16384, 1));
 
-        const result = Openwakeword.processFrame(
+        if (!detectorRef.current) return;
+        const result = detectorRef.current.processFrame(
           chunk.buffer.slice(chunk.byteOffset, chunk.byteOffset + chunk.byteLength)
         );
 

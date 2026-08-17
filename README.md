@@ -48,31 +48,32 @@ The detector expects three TensorFlow Lite model files:
 2. `embedding_model.tflite`
 3. A wake word model, for example `hey_jarvis.tflite`
 
-The models must be available as real files on the device filesystem. On Android, do not pass a bundled asset URI directly to `loadModels()`. Copy or download the models into app storage first, then pass absolute paths.
+The models must be available as real files on the device filesystem. On Android, do not pass a bundled asset URI directly to `Openwakeword.createDetector()`. Copy or download the models into app storage first, then pass absolute paths.
 
 ## Usage
 
 ```ts
 import { Openwakeword } from 'react-native-openwakeword'
 
-const loaded = Openwakeword.loadModels(
-  '/absolute/path/to/melspectrogram.tflite',
-  '/absolute/path/to/embedding_model.tflite',
-  '/absolute/path/to/hey_jarvis.tflite'
-)
+const detector = await Openwakeword.createDetector({
+  melspecPath: '/absolute/path/to/melspectrogram.tflite',
+  embeddingPath: '/absolute/path/to/embedding_model.tflite',
+  wakeWordPath: '/absolute/path/to/hey_jarvis.tflite',
+})
+// Openwakeword.createDetector() rejects with a descriptive Error if a model fails to load
 
-if (!loaded) {
-  throw new Error('Failed to load wake word models')
-}
-
-Openwakeword.setThreshold(0.5)
+detector.setThreshold(0.5)
 ```
+
+`Openwakeword.createDetector()` only resolves once models are fully loaded, so there is no way to end
+up with a detector that isn't ready — `processFrame`/`setThreshold`/`reset` are only reachable
+through the object it returns.
 
 Feed 16 kHz, mono, signed 16-bit PCM audio into `processFrame()`:
 
 ```ts
 function onAudioBuffer(buffer: ArrayBuffer) {
-  const result = Openwakeword.processFrame(buffer)
+  const result = detector.processFrame(buffer)
 
   if (result.isDetected) {
     console.log('Wake word detected', result.probability)
@@ -83,8 +84,11 @@ function onAudioBuffer(buffer: ArrayBuffer) {
 If you restart a voice session or want to discard previous streaming context, reset the internal buffers:
 
 ```ts
-Openwakeword.reset()
+detector.reset()
 ```
+
+To switch wake words, call `Openwakeword.createDetector()` again with new paths — it safely tears down
+the previously loaded models.
 
 ## Audio Input
 
@@ -101,15 +105,23 @@ The native engine processes audio in 1280-sample windows, which is about 80 ms a
 
 ## API
 
-### `loadModels(melspecPath, embeddingPath, wakeWordPath): boolean`
+### `Openwakeword.createDetector(paths: ModelPaths): Promise<WakeWordDetector>`
 
-Loads the three `.tflite` models and prepares TensorFlow Lite interpreters.
+Loads the three `.tflite` models, prepares TensorFlow Lite interpreters, and resolves with a
+ready `WakeWordDetector`. Runs on a background thread; rejects with a descriptive `Error` if any
+path can't be read or parsed.
 
 ```ts
-const ok = Openwakeword.loadModels(melspecPath, embeddingPath, wakeWordPath)
+type ModelPaths = {
+  melspecPath: string
+  embeddingPath: string
+  wakeWordPath: string
+}
+
+const detector = await Openwakeword.createDetector(paths)
 ```
 
-### `processFrame(buffer): DetectionResult`
+### `WakeWordDetector.processFrame(buffer): DetectionResult`
 
 Processes incoming PCM audio and returns the latest wake word score.
 
@@ -120,20 +132,21 @@ type DetectionResult = {
 }
 ```
 
-### `setThreshold(threshold): void`
+### `WakeWordDetector.setThreshold(threshold): void`
 
-Sets the probability threshold used for `isDetected`.
+Sets the probability threshold used for `isDetected`. Defaults to `0.5`. Throws if `threshold`
+is outside the `0.0`–`1.0` range.
 
 ```ts
-Openwakeword.setThreshold(0.5)
+detector.setThreshold(0.5)
 ```
 
-### `reset(): void`
+### `WakeWordDetector.reset(): void`
 
 Clears streaming audio, mel, and embedding buffers.
 
 ```ts
-Openwakeword.reset()
+detector.reset()
 ```
 
 ## Performance

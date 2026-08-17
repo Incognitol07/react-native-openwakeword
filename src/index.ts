@@ -1,5 +1,3 @@
-import { NitroModules } from 'react-native-nitro-modules'
-import type { Openwakeword as OpenwakewordSpec } from './specs/openwakeword.nitro'
-
-export const Openwakeword =
-  NitroModules.createHybridObject<OpenwakewordSpec>('Openwakeword')
+export type { DetectionResult, ModelPaths } from './specs/openwakeword.nitro'
+export type { WakeWordDetector } from './WakeWordDetector'
+export { Openwakeword } from './Openwakeword'

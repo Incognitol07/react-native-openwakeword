@@ -13,10 +13,13 @@
 #error NitroModules cannot be found! Are you sure you installed NitroModules properly?
 #endif
 
+// Forward declaration of `ModelPaths` to properly resolve imports.
+namespace margelo::nitro::openwakeword { struct ModelPaths; }
 // Forward declaration of `DetectionResult` to properly resolve imports.
 namespace margelo::nitro::openwakeword { struct DetectionResult; }
 
-#include <string>
+#include <NitroModules/Promise.hpp>
+#include "ModelPaths.hpp"
 #include "DetectionResult.hpp"
 #include <NitroModules/ArrayBuffer.hpp>
 
@@ -51,7 +54,7 @@ namespace margelo::nitro::openwakeword {
 
     public:
       // Methods
-      virtual bool loadModels(const std::string& melspecPath, const std::string& embeddingPath, const std::string& wakeWordPath) = 0;
+      virtual std::shared_ptr<Promise<void>> loadModels(const ModelPaths& paths) = 0;
       virtual DetectionResult processFrame(const std::shared_ptr<ArrayBuffer>& buffer) = 0;
       virtual void setThreshold(double threshold) = 0;
       virtual void reset() = 0;
