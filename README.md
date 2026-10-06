@@ -28,14 +28,14 @@ This provides full access to the open model ecosystem under a permissive open-so
 ### Wake Word Detection Comparison
 
 | Requirement | Picovoice Porcupine | DaVoice | **react-native-openwakeword** |
-| --- | --- | --- | --- |
-| **Offline inference** | ✔️ | Varies | **✔️** |
+| :--- | :--- | :--- | :--- |
+| **Offline inference** | ✔️ | ✔️️ | **✔️** |
 | **Open source** | ❌ | ❌ | **✔️ Apache-2.0** |
 | **Commercial license required** | Yes | Yes | **❌ None** |
-| **Bring your own `.tflite` models** | ❌ | Varies | **✔️** |
-| **Custom wake word models** | Licensing/model dependent | Varies | **✔️ Compatible `.tflite` models** |
-| **Cloud dependency** | Varies | Varies | **❌ None** |
-| **API key / account** | Required | Varies | **❌ None** |
+| **Bring your own `.tflite` models** | ❌ | ❌ | **✔️** |
+| **Custom wake word models** | Restricted | Managed request | **✔️ Compatible `.tflite` models** |
+| **Cloud dependency** | Optional | Managed | **❌ None** |
+| **API key / account** | Required | Required | **❌ None** |
 | **React Native** | ✔️ | ✔️ | **✔️** |
 
 
