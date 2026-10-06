@@ -11,6 +11,9 @@ Run **openWakeWord** models directly on **iOS and Android** with TensorFlow Lite
 [![License](https://img.shields.io/npm/l/react-native-openwakeword.svg)](https://github.com/Incognitol07/react-native-openwakeword/blob/master/LICENSE)
 
 
+⭐ **We're on our way to 50 stars!**  
+If `react-native-openwakeword` is useful to you, don't forget to star the repo and help us get there. It take **2 seconds!**
+
 ## The Problem
 
 Building **wake word detection in React Native** often means choosing between cloud services or proprietary SDKs:
@@ -22,8 +25,7 @@ Building **wake word detection in React Native** often means choosing between cl
 
 This provides full access to the open model ecosystem under a permissive open-source license without third-party commercial blockers.
 
-
-## Wake Word Detection Comparison
+### Wake Word Detection Comparison
 
 | Requirement | Picovoice Porcupine | DaVoice | **react-native-openwakeword** |
 | --- | --- | --- | --- |
@@ -37,7 +39,7 @@ This provides full access to the open model ecosystem under a permissive open-so
 | **React Native** | ✔️ | ✔️ | **✔️** |
 
 
-## Performance
+### Performance
 
 Built with a streaming C++ pipeline and fixed ring buffers, designed to stay safely below real-time audio constraints.
 
@@ -46,7 +48,6 @@ Built with a streaming C++ pipeline and fixed ring buffers, designed to stay saf
 * **Average Frame Inference (`processFrame`):** ~18 ms for an 80 ms audio window *(Real-time budget is ~80 ms)*
 * **Steady-State CPU Usage:** ~5% - 7% while listening
 * **Memory Footprint:** ~32 MB Native Heap PSS
-
 
 ## Quick Start
 
