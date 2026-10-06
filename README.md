@@ -12,7 +12,7 @@ Run **openWakeWord** models directly on **iOS and Android** with TensorFlow Lite
 
 
 ⭐ **We're on our way to 50 stars!**  
-If `react-native-openwakeword` is useful to you, don't forget to star the repo and help us get there. It take **2 seconds!**
+If `react-native-openwakeword` is useful to you, star the repo and help us get there. It take **2 seconds!**
 
 ## The Problem
 
@@ -97,6 +97,13 @@ function onAudioBuffer(buffer: ArrayBuffer) {
 
 > **Model flexibility:** Use your own `.tflite` models and control how they are delivered. On Android, copy bundled models or download them into app storage, then pass their absolute paths to the detector.
 ---
+
+## Models
+
+Need a wake word model?
+
+- **Pre-trained:** [openWakeWord models](https://github.com/dscripka/openWakeWord#pre-trained-models)
+- **Custom:** [LiveKit WakeWord](https://github.com/livekit/livekit-wakeword) for training and exporting your own models.
 
 ## API Reference
 
