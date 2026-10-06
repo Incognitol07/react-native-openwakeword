@@ -17,6 +17,7 @@ on:
       - '**.md'
       - 'LICENSE'
       - '.github/dependabot.yml'
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -191,7 +192,7 @@ jobs:
   release:
     name: Release
     needs: [build-android, build-ios]
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
       contents: write
