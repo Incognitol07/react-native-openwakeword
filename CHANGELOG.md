@@ -1,3 +1,16 @@
+# [3.1.0](https://github.com/Incognitol07/react-native-openwakeword/compare/v3.0.0...v3.1.0) (2026-10-06)
+
+
+### Bug Fixes
+
+* trigger release ([8d9386b](https://github.com/Incognitol07/react-native-openwakeword/commit/8d9386be63e2e4a300c542660168f32cf7e2195a))
+* update release conditions to allow manual triggers ([ef43055](https://github.com/Incognitol07/react-native-openwakeword/commit/ef43055a8f131fe1e84fe72cde409758fff769a7))
+
+
+### Features
+
+* Revise README for clarity and add models information ([3228c68](https://github.com/Incognitol07/react-native-openwakeword/commit/3228c68751f859fcc37f9f9ccdaf2c8c1d9b30f9))
+
 # [3.0.0](https://github.com/Incognitol07/react-native-openwakeword/compare/v2.2.0...v3.0.0) (2026-08-17)
 
 
